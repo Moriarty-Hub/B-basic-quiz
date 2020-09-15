@@ -35,4 +35,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserIdNotMatchException.class)
+    public ResponseEntity<Error> userIdNotMatchExceptionHandler(UserIdNotMatchException exception) {
+        Error error = Error.builder()
+                .timestamp(new Date().toString())
+                .status(exception.getErrorCode())
+                .error(DESCRIPTION_OF_ERROR_CODE_400)
+                .message(exception.getMessage()).build();
+        return ResponseEntity.badRequest().body(error);
+    }
+
 }

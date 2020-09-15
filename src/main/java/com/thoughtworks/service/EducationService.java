@@ -1,6 +1,7 @@
 package com.thoughtworks.service;
 
 import com.thoughtworks.entity.Education;
+import com.thoughtworks.exception.UserIdNotMatchException;
 import com.thoughtworks.exception.UserNotFoundException;
 import com.thoughtworks.repository.EducationRepository;
 import com.thoughtworks.repository.UserRepository;
@@ -29,6 +30,9 @@ public class EducationService {
     public List<Education> addEducation(Long id, Education education) {
         if (userRepository.getUserById(id) == null) {
             throw new UserNotFoundException();
+        }
+        if (!id.equals(education.getUserId())) {
+            throw new UserIdNotMatchException();
         }
         educationRepository.addEducation(id, education);
         return getEducationListById(id);

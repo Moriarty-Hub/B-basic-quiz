@@ -175,7 +175,7 @@ public class IntegrationControllerTest {
 
     @Test
     public void should_throw_exception_when_the_length_of_avatar_is_invalid() throws Exception {
-        User user = User.builder().name("root").age(15).avatar("https").description("this is a test").build();
+        User user = User.builder().name("root").age(18).avatar("https").description("this is a test").build();
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(requestBody))
@@ -231,6 +231,18 @@ public class IntegrationControllerTest {
                 .andExpect(jsonPath("$.status", is(404)))
                 .andExpect(jsonPath("$.error", is("Not Found")))
                 .andExpect(jsonPath("$.message", is("The user id is not exist")));
+    }
+
+    @Test
+    public void should_throw_exception_when_the_user_id_in_the_education_is_not_the_same_as_that_in_the_url() throws Exception {
+        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("A mock description").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(education);
+        mockMvc.perform(post("/users/2/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The user id in the education request body is not match with the user id in the url")));
     }
 
 }
