@@ -9,18 +9,19 @@ import java.util.Map;
 @Component
 public class UserRepository {
 
-    private static Long NEXT_ID = 1L;
+    private Long NEXT_ID = 1L;
     private final Map<Long, User> userMap = new HashMap<>();
 
     public User getUserById(Long id) {
         return userMap.get(id);
     }
 
-    public void addUser(User user) {
+    public User addUser(User user) {
         Long id = NEXT_ID;
         user.setId(id);
         userMap.put(id, user);
         NEXT_ID++;
+        return user;
     }
 
     public void clearAll() {
