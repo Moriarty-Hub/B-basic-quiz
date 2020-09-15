@@ -11,6 +11,7 @@ import com.thoughtworks.service.UserService;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class IntegrationController {
 
     private final UserService userService;
