@@ -1,9 +1,11 @@
 package com.thoughtworks.controller;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.entity.Education;
 import com.thoughtworks.entity.User;
+import com.thoughtworks.repository.EducationRepository;
+import com.thoughtworks.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import com.thoughtworks.repository.UserRepository;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,9 +30,12 @@ public class IntegrationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EducationRepository educationRepository;
 
     @BeforeEach
     public void setUp() {
@@ -50,6 +55,26 @@ public class IntegrationControllerTest {
 
         userRepository.addUser(testDataOfUser1);
         userRepository.addUser(testDataOfUser2);
+
+        educationRepository.initializeEducationListForNewUser(1L);
+        educationRepository.initializeEducationListForNewUser(2L);
+
+        Education testData1OfEducationOfUser1 = Education.builder()
+                .userId(1L)
+                .year(2005L)
+                .title("Primary School")
+                .description("I got brilliant performance there")
+                .build();
+
+        Education testData2OfEducationOfUser1 = Education.builder()
+                .userId(1L)
+                .year(2016L)
+                .title("Senior high School")
+                .description("I got good grades there")
+                .build();
+
+        educationRepository.addEducation(1L, testData1OfEducationOfUser1);
+        educationRepository.addEducation(1L, testData2OfEducationOfUser1);
     }
 
     @AfterEach
@@ -91,5 +116,19 @@ public class IntegrationControllerTest {
 
     }
 
+    @Test
+    public void should_get_education_list_of_user_1() throws Exception {
+        mockMvc.perform(get("/users/1/educations"))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].userId", is(1)))
+                .andExpect(jsonPath("$[0].year", is(2005)))
+                .andExpect(jsonPath("$[0].title", is("Primary School")))
+                .andExpect(jsonPath("$[0].description", is("I got brilliant performance there")))
+                .andExpect(jsonPath("$[1].userId", is(1)))
+                .andExpect(jsonPath("$[1].year", is(2016)))
+                .andExpect(jsonPath("$[1].title", is("Senior high School")))
+                .andExpect(jsonPath("$[1].description", is("I got good grades there")))
+                .andExpect(status().isOk());
+    }
 
 }
