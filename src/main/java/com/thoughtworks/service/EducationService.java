@@ -18,4 +18,10 @@ public class EducationService {
     public List<Education> getEducationListById(Long id) {
         return educationRepository.getEducationListById(id);
     }
+
+    public List<Education> addEducation(Long id, Education education) {
+        educationRepository.addEducation(id, education);
+        return getEducationListById(id);
+    }
+
 }

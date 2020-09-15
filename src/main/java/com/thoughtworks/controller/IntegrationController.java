@@ -35,4 +35,9 @@ public class IntegrationController {
     public ResponseEntity<List<Education>> getEducationListById(@PathVariable Long id) {
         return ResponseEntity.ok(educationService.getEducationListById(id));
     }
+
+    @PostMapping("/users/{id}/educations")
+    public ResponseEntity<List<Education>> addEducation(@PathVariable Long id, @RequestBody Education education) {
+        return new ResponseEntity<>(educationService.addEducation(id, education), HttpStatus.CREATED);
+    }
 }

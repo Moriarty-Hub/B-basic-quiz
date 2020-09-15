@@ -131,4 +131,23 @@ public class IntegrationControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void education_should_be_added_into_education_list_of_specified_user() throws Exception {
+        Education education = Education.builder()
+                .userId(2L)
+                .year(2010L)
+                .title("Working at ThoughtWorks")
+                .description("I have been working at ThoughtWorks for more than five years")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(education);
+        mockMvc.perform(post("/users/2/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].userId", is(2)))
+                .andExpect(jsonPath("$[0].year", is(2010)))
+                .andExpect(jsonPath("$[0].title", is("Working at ThoughtWorks")))
+                .andExpect(jsonPath("$[0].description", is("I have been working at ThoughtWorks for more than five years")))
+                .andExpect(status().isCreated());
+    }
+
 }
