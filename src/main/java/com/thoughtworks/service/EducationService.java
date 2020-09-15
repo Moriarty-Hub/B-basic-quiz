@@ -8,6 +8,7 @@ import com.thoughtworks.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EducationService {
@@ -21,14 +22,14 @@ public class EducationService {
     }
 
     public List<Education> getEducationListById(Long id) {
-        if (userRepository.getUserById(id) == null) {
+        if (Objects.isNull(userRepository.getUserById(id))) {
             throw new UserNotFoundException();
         }
         return educationRepository.getEducationListById(id);
     }
 
     public List<Education> addEducation(Long id, Education education) {
-        if (userRepository.getUserById(id) == null) {
+        if (Objects.isNull(userRepository.getUserById(id))) {
             throw new UserNotFoundException();
         }
         if (!id.equals(education.getUserId())) {

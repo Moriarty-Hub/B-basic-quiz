@@ -6,6 +6,8 @@ import com.thoughtworks.repository.EducationRepository;
 import org.springframework.stereotype.Service;
 import com.thoughtworks.repository.UserRepository;
 
+import java.util.Objects;
+
 @Service
 public class UserService {
 
@@ -19,7 +21,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         User user =  userRepository.getUserById(id);
-        if (user == null) {
+        if (Objects.isNull(user)) {
             throw new UserNotFoundException();
         }
         return user;
