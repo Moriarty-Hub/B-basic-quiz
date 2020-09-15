@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.thoughtworks.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class IntegrationController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
     }
 
@@ -38,7 +39,7 @@ public class IntegrationController {
     }
 
     @PostMapping("/users/{id}/educations")
-    public ResponseEntity<List<Education>> addEducation(@PathVariable Long id, @RequestBody Education education) {
+    public ResponseEntity<List<Education>> addEducation(@PathVariable Long id, @RequestBody @Valid Education education) {
         return new ResponseEntity<>(educationService.addEducation(id, education), HttpStatus.CREATED);
     }
 }

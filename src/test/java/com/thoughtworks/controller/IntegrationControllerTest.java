@@ -1,6 +1,5 @@
 package com.thoughtworks.controller;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.entity.Education;
 import com.thoughtworks.entity.User;
@@ -148,6 +147,66 @@ public class IntegrationControllerTest {
                 .andExpect(jsonPath("$[0].title", is("Working at ThoughtWorks")))
                 .andExpect(jsonPath("$[0].description", is("I have been working at ThoughtWorks for more than five years")))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void should_throw_exception_when_the_length_of_name_is_invalid() throws Exception {
+        User user = User.builder().name("").age(30).avatar("https://www.amazon.com/").description("this is a test").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The length of name is invalid, it must within the range from 1 to 128")));
+    }
+
+    @Test
+    public void should_throw_exception_when_the_age_is_invalid() throws Exception {
+        User user = User.builder().name("root").age(15).avatar("https://www.amazon.com/").description("this is a test").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The value of age is invalid, it must be greater than 16")));
+    }
+
+    @Test
+    public void should_throw_exception_when_the_length_of_avatar_is_invalid() throws Exception {
+        User user = User.builder().name("root").age(15).avatar("https").description("this is a test").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The length of avatar URL is invalid, it must within the range from 8 to 512")));
+    }
+
+    @Test
+    public void should_throw_exception_when_the_length_of_title_of_education_is_invalid() throws Exception {
+        Education education = Education.builder().userId(1L).year(2000L).title("").description("Hello, world").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(education);
+        mockMvc.perform(post("/users/1/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The length of title is invalid, it must within the range from 1 to 256")));
+    }
+
+    @Test
+    public void should_throw_exception_when_the_length_of_description_of_education_is_invalid() throws Exception {
+        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(education);
+        mockMvc.perform(post("/users/1/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.error", is("Bad Request")))
+                .andExpect(jsonPath("$.message", is("The length of description is invalid, it must within the range from 1 to 4096")));
     }
 
 }
