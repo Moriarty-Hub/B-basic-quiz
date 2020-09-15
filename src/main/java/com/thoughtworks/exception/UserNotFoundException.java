@@ -1,5 +1,7 @@
 package com.thoughtworks.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class UserNotFoundException extends RuntimeException {
 
     @Override
@@ -8,6 +10,6 @@ public class UserNotFoundException extends RuntimeException {
     }
 
     public Integer getErrorCode() {
-        return 404;
+        return HttpStatus.NOT_FOUND.value();
     }
 }

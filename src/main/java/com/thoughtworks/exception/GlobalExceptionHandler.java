@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Error> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
         Error error = Error.builder()
                 .timestamp(new Date().toString())
-                .status(400)
+                .status(HttpStatus.BAD_REQUEST.value())
                 .error(DESCRIPTION_OF_ERROR_CODE_400)
                 .message(Objects.requireNonNull(exception.getBindingResult().getFieldError()).getDefaultMessage()).build();
         return ResponseEntity.badRequest().body(error);

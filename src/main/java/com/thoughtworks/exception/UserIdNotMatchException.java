@@ -1,5 +1,7 @@
 package com.thoughtworks.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class UserIdNotMatchException extends RuntimeException {
 
     @Override
@@ -8,6 +10,6 @@ public class UserIdNotMatchException extends RuntimeException {
     }
 
     public Integer getErrorCode() {
-        return 400;
+        return HttpStatus.BAD_REQUEST.value();
     }
 }
