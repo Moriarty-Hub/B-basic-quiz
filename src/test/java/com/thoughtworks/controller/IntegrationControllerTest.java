@@ -209,4 +209,28 @@ public class IntegrationControllerTest {
                 .andExpect(jsonPath("$.message", is("The length of description is invalid, it must within the range from 1 to 4096")));
     }
 
+    @Test
+    public void should_throw_user_not_found_exception_when_user_id_is_not_exist() throws Exception {
+        mockMvc.perform(get("/users/10"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.error", is("Not Found")))
+                .andExpect(jsonPath("$.message", is("The user id is not exist")));
+
+        mockMvc.perform(get("/users/10/educations"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.error", is("Not Found")))
+                .andExpect(jsonPath("$.message", is("The user id is not exist")));
+
+        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("A mock description").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBody = objectMapper.writeValueAsString(education);
+        mockMvc.perform(post("/users/10/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.error", is("Not Found")))
+                .andExpect(jsonPath("$.message", is("The user id is not exist")));
+    }
+
 }

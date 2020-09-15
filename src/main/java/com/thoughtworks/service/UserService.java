@@ -1,6 +1,7 @@
 package com.thoughtworks.service;
 
 import com.thoughtworks.entity.User;
+import com.thoughtworks.exception.UserNotFoundException;
 import com.thoughtworks.repository.EducationRepository;
 import org.springframework.stereotype.Service;
 import com.thoughtworks.repository.UserRepository;
@@ -17,7 +18,11 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.getUserById(id);
+        User user =  userRepository.getUserById(id);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 
     public User addUser(User user) {
