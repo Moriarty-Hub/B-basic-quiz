@@ -29,6 +29,7 @@ public class UserService {
 
     public User addUser(User user) {
         User createdUser = userRepository.addUser(user);
+        // GTB: 这个处理可以放到 Repository 中处理，返回时直接返回空 list 即可
         educationRepository.initializeEducationListForNewUser(createdUser.getId());
         return createdUser;
     }

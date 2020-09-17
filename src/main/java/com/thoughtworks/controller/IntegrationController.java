@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
+// GTB: - 这不是个合理的 controller 名字
 public class IntegrationController {
 
     private final UserService userService;
@@ -35,6 +36,7 @@ public class IntegrationController {
 
     @GetMapping("/users/{id}/educations")
     public ResponseEntity<List<Education>> getEducationListById(@PathVariable Long id) {
+        // GTB: - user 没有 educations 时，应该返回 []
         return ResponseEntity.ok(educationService.getEducationListById(id));
     }
 

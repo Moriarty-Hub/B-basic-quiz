@@ -12,6 +12,7 @@ import java.util.Objects;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // GTB: - 有HttpStatus.BAD_REQUEST可以用，了解一下
     private static final String DESCRIPTION_OF_ERROR_CODE_400 = "Bad Request";
     private static final String DESCRIPTION_OF_ERROR_CODE_404 = "Not Found";
 
