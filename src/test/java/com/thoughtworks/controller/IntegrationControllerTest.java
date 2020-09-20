@@ -52,33 +52,30 @@ public class IntegrationControllerTest {
                 .description("This is another user for test")
                 .build();
 
-        userRepository.addUser(testDataOfUser1);
-        userRepository.addUser(testDataOfUser2);
-
-        educationRepository.initializeEducationListForNewUser(1L);
-        educationRepository.initializeEducationListForNewUser(2L);
+        userRepository.save(testDataOfUser1);
+        userRepository.save(testDataOfUser2);
 
         Education testData1OfEducationOfUser1 = Education.builder()
-                .userId(1L)
+                .user(testDataOfUser1)
                 .year(2005L)
                 .title("Primary School")
                 .description("I got brilliant performance there")
                 .build();
 
         Education testData2OfEducationOfUser1 = Education.builder()
-                .userId(1L)
+                .user(testDataOfUser1)
                 .year(2016L)
                 .title("Senior high School")
                 .description("I got good grades there")
                 .build();
 
-        educationRepository.addEducation(1L, testData1OfEducationOfUser1);
-        educationRepository.addEducation(1L, testData2OfEducationOfUser1);
+        educationRepository.save(testData1OfEducationOfUser1);
+        educationRepository.save(testData2OfEducationOfUser1);
     }
 
     @AfterEach
     public void tearDown() {
-        userRepository.clearAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -119,34 +116,13 @@ public class IntegrationControllerTest {
     public void should_get_education_list_of_user_1() throws Exception {
         mockMvc.perform(get("/users/1/educations"))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].userId", is(1)))
                 .andExpect(jsonPath("$[0].year", is(2005)))
                 .andExpect(jsonPath("$[0].title", is("Primary School")))
                 .andExpect(jsonPath("$[0].description", is("I got brilliant performance there")))
-                .andExpect(jsonPath("$[1].userId", is(1)))
                 .andExpect(jsonPath("$[1].year", is(2016)))
                 .andExpect(jsonPath("$[1].title", is("Senior high School")))
                 .andExpect(jsonPath("$[1].description", is("I got good grades there")))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    public void education_should_be_added_into_education_list_of_specified_user() throws Exception {
-        Education education = Education.builder()
-                .userId(2L)
-                .year(2010L)
-                .title("Working at ThoughtWorks")
-                .description("I have been working at ThoughtWorks for more than five years")
-                .build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writeValueAsString(education);
-        mockMvc.perform(post("/users/2/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].userId", is(2)))
-                .andExpect(jsonPath("$[0].year", is(2010)))
-                .andExpect(jsonPath("$[0].title", is("Working at ThoughtWorks")))
-                .andExpect(jsonPath("$[0].description", is("I have been working at ThoughtWorks for more than five years")))
-                .andExpect(status().isCreated());
     }
 
     @Test
@@ -187,7 +163,14 @@ public class IntegrationControllerTest {
 
     @Test
     public void should_throw_exception_when_the_length_of_title_of_education_is_invalid() throws Exception {
-        Education education = Education.builder().userId(1L).year(2000L).title("").description("Hello, world").build();
+        User testDataOfUser1 = User.builder()
+                .name("root")
+                .age(20)
+                .avatar("https://www.google.com/")
+                .description("This is a user for test")
+                .build();
+
+        Education education = Education.builder().user(testDataOfUser1).year(2000L).title("").description("Hello, world").build();
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(education);
         mockMvc.perform(post("/users/1/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
@@ -199,7 +182,14 @@ public class IntegrationControllerTest {
 
     @Test
     public void should_throw_exception_when_the_length_of_description_of_education_is_invalid() throws Exception {
-        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("").build();
+        User testDataOfUser1 = User.builder()
+                .name("root")
+                .age(20)
+                .avatar("https://www.google.com/")
+                .description("This is a user for test")
+                .build();
+
+        Education education = Education.builder().user(testDataOfUser1).year(2000L).title("A mock title").description("").build();
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(education);
         mockMvc.perform(post("/users/1/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
@@ -223,7 +213,14 @@ public class IntegrationControllerTest {
                 .andExpect(jsonPath("$.error", is("Not Found")))
                 .andExpect(jsonPath("$.message", is("The user id is not exist")));
 
-        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("A mock description").build();
+        User testDataOfUser1 = User.builder()
+                .name("root")
+                .age(20)
+                .avatar("https://www.google.com/")
+                .description("This is a user for test")
+                .build();
+
+        Education education = Education.builder().user(testDataOfUser1).year(2000L).title("A mock title").description("A mock description").build();
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(education);
         mockMvc.perform(post("/users/10/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
@@ -231,18 +228,6 @@ public class IntegrationControllerTest {
                 .andExpect(jsonPath("$.status", is(404)))
                 .andExpect(jsonPath("$.error", is("Not Found")))
                 .andExpect(jsonPath("$.message", is("The user id is not exist")));
-    }
-
-    @Test
-    public void should_throw_exception_when_the_user_id_in_the_education_is_not_the_same_as_that_in_the_url() throws Exception {
-        Education education = Education.builder().userId(1L).year(2000L).title("A mock title").description("A mock description").build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestBody = objectMapper.writeValueAsString(education);
-        mockMvc.perform(post("/users/2/educations").contentType(MediaType.APPLICATION_JSON).content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.error", is("Bad Request")))
-                .andExpect(jsonPath("$.message", is("The user id in the education request body is not match with the user id in the url")));
     }
 
 }
