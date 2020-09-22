@@ -35,9 +35,10 @@ public class EducationService {
         if (!user.isPresent()) {
             throw new UserNotFoundException();
         }
-        if (!id.equals(education.getUser().getId())) {
+        if (!id.equals(education.getUserId())) {
             throw new UserIdNotMatchException();
         }
+        education.setUser(user.get());
         educationRepository.save(education);
         return getEducationListById(id);
     }
