@@ -5,14 +5,16 @@ import com.thoughtworks.entity.User;
 import com.thoughtworks.exception.UserNotFoundException;
 import com.thoughtworks.repository.EducationRepository;
 import com.thoughtworks.repository.UserRepository;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -66,7 +68,6 @@ public class EducationServiceTest {
     }
 
     @Test
-    @Ignore
     public void should_get_the_latest_education_list_when_add_new_education() {
         when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(user));
         Education insertedEducation = Education.builder()
@@ -77,7 +78,8 @@ public class EducationServiceTest {
                 .build();
         List<Education> returnedEducationList = new LinkedList<>(user.getEducationList());
         returnedEducationList.add(insertedEducation);
-        when(educationService.getEducationListById(1L)).thenReturn(returnedEducationList);
+        User returnedUser = User.builder().educationList(returnedEducationList).build();
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(returnedUser));
 
         List<Education> result = educationService.addEducation(1L, insertedEducation);
 
